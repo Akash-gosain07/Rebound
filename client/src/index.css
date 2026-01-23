@@ -1,0 +1,245 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+
+    /* Rebound UI Color Palette - Blue/White Theme */
+    --background: #EFECE3;
+    /* No gradient for main background, flat soft white */
+    --surface: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --border: #8FABD4;
+
+    /* Primary Brand (Classic Blue) */
+    --primary: #4A70A9;
+    --primary-dark: #3D5E8C;
+    --primary-light: #6B8BB9;
+
+    /* Secondary Brand (Soft Blue) */
+    --secondary: #8FABD4;
+    --secondary-dark: #7A9AC3;
+
+    /* Status Colors */
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --danger: #DC2626;
+
+    /* Shadows - Soft & Clean */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.05);
+    /* Lighter shadow for white cards */
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --shadow-button: 0 2px 8px rgba(74, 112, 169, 0.2);
+    /* Tinted with primary color */
+  }
+
+  /* Dark Mode - Adjusted for Blue Theme */
+  .dark {
+    /* Dark Mode Color Palette */
+    --background: #0F172A;
+    --surface: #1E293B;
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --border: #334155;
+
+    /* Primary Brand - Lighter Blue for Dark Mode */
+    --primary: #60A5FA;
+    --primary-dark: #3B82F6;
+    --primary-light: #93C5FD;
+
+    --secondary: #475569;
+    --secondary-dark: #64748B;
+
+    /* Status Colors */
+    --success: #34D399;
+    --warning: #FBBF24;
+    --danger: #F87171;
+
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    @apply font-sans antialiased;
+  }
+
+  /* Flat Background for App */
+  .bg-gradient-app {
+    background: var(--background);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+@layer utilities {
+
+  /* Card Utilities */
+  .card-surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    /* White cards need border to pop on light bg? Maybe not if shadow is used. User said cards on top of #EFECE3. */
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Button Utilities */
+  .btn-primary {
+    background: var(--primary);
+    color: #FFFFFF;
+    /* White Text */
+    box-shadow: var(--shadow-button);
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 112, 169, 0.3);
+  }
+
+  .btn-secondary {
+    background: var(--secondary);
+    color: #000000;
+    /* Black Text */
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--secondary-dark);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    transition: all 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(74, 112, 169, 0.1);
+  }
+
+  /* Shadow Utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Animation Utilities */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  }
+
+  /* Modern Form Styling */
+  .input-modern {
+    @apply w-full rounded-xl bg-white border border-border px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+  }
+
+  .label-modern {
+    @apply text-sm font-medium text-slate-700 tracking-wide;
+  }
+
+  .field-group {
+    @apply space-y-2;
+  }
+
+  /* Smooth Slide Animation for Conditional Fields */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+      max-height: 0;
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 500px;
+    }
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+}
+
+/* Leaflet Map Constraints */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+.leaflet-pane {
+  z-index: auto !important;
+}
+
+/* Mapbox GL Control Container */
+.mapboxgl-control-container {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Scrollbar styling */
+* {
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
+}

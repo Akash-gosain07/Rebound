@@ -1,0 +1,35 @@
+:root {
+  --rb-bg: #F6F7F9;
+  --rb-surface: #ffffff;
+  --rb-radius-card: 1.5rem;
+  --rb-radius-pill: 999px;
+  --rb-shadow-card: 0 18px 45px rgba(15, 23, 42, 0.12);
+  --rb-shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --rb-color-primary-from: #14b8a6;
+  --rb-color-primary-to: #22c55e;
+  --rb-color-accent: #f97316;
+}
+
+/* Desktop app shell: 1100px centered container */
+.rb-shell {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 32px 40px;
+}
+
+.rb-shell-narrow {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rb-device-surface {
+  background-color: var(--rb-surface);
+  border-radius: var(--rb-radius-card);
+  box-shadow: var(--rb-shadow-card);
+}
+
+.rb-page-background {
+  background-color: var(--rb-bg);
+}
