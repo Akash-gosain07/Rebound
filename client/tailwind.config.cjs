@@ -5,40 +5,40 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Rebound UI Design System - New Blue/White Theme
-        background: '#EFECE3', // User requested: App main background
-        surface: '#FFFFFF',    // User requested: Card background
-        border: '#8FABD4',     // User requested: Input/Tab border
+        // Rebound UI Design System - Dynamic Theme via CSS Variables
+        background: 'var(--background)',
+        surface: 'var(--surface)',
+        border: 'var(--border)',
 
         // Text colors
         text: {
-          primary: '#000000',    // User requested: Primary text
-          secondary: 'rgba(0, 0, 0, 0.65)' // User requested: Secondary text
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)'
         },
 
         // Primary Brand (Buttons)
         primary: {
-          DEFAULT: '#4A70A9', // User requested: Primary CTA
-          dark: '#3D5E8C',    // User requested: Hover
-          light: '#6B8BB9'
+          DEFAULT: 'var(--primary)',
+          dark: 'var(--primary-dark)',
+          light: 'var(--primary-light)'
         },
 
         // Secondary Brand (Cancel/Back)
         secondary: {
-          DEFAULT: '#8FABD4',
-          dark: '#7A9AC3'
+          DEFAULT: 'var(--secondary)',
+          dark: 'var(--secondary-dark)'
         },
 
-        // Accent (Transparent/Ghost)
+        // Accent Brand (Rose)
         accent: {
-          DEFAULT: '#4A70A9', // For text/border on ghost buttons
-          dark: '#3D5E8C'
+          DEFAULT: 'var(--accent)',
+          dark: 'var(--accent-dark)'
         },
 
         // Status colors
-        success: '#16A34A', // User requested: Success
-        warning: '#F59E0B', // User requested: Warning
-        danger: '#DC2626'   // User requested: Danger
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)'
       },
 
       borderRadius: {

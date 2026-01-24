@@ -1,0 +1,205 @@
+/* Main Container - Slim & Glassmorphic */
+.workflow-card-container {
+    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.08);
+    /* Very subtle glass */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Track Layout */
+.workflow-track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* Step Style */
+.workflow-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Reduced gap */
+    padding: 8px 8px;
+    /* Reduced padding to fit text */
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    /* Very subtle border */
+    flex: 1;
+    min-width: 0;
+    transition: all 0.4s ease;
+    opacity: 0.55;
+    /* Default low opacity */
+    transform: translateY(0);
+}
+
+.step-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.step-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Removed overflow: hidden to prevent text clipping */
+}
+
+.step-title {
+    font-size: 13px;
+    /* 13px bold */
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+}
+
+.step-subtitle {
+    font-size: 11px;
+    /* 11px muted */
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+/* Arrows */
+.workflow-arrow {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+    margin: 0 -2px;
+}
+
+/* Shimmer Line */
+.workflow-shimmer-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    width: 50%;
+    transform: translateX(-150%);
+    animation: shimmerProgress 6s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes shimmerProgress {
+    0% {
+        transform: translateX(-150%);
+    }
+
+    20% {
+        transform: translateX(20%);
+    }
+
+    /* Quick slide with Step 1 */
+    40% {
+        transform: translateX(120%);
+    }
+
+    /* To Step 2 */
+    100% {
+        transform: translateX(350%);
+    }
+
+    /* Off screen */
+}
+
+/* Highlight Animations Loop (6s total) 
+   Behavior: Opacity 0.55 -> 1 & translateY(-2px) during active window
+*/
+
+.step-1 {
+    animation: highlightLoop 6s infinite;
+    animation-delay: 0s;
+}
+
+.step-2 {
+    animation: highlightLoop 6s infinite;
+    animation-delay: 2s;
+}
+
+.step-3 {
+    animation: highlightLoop 6s infinite;
+    animation-delay: 4s;
+}
+
+@keyframes highlightLoop {
+    0% {
+        opacity: 0.55;
+        transform: translateY(0);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    5% {
+        opacity: 1;
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    35% {
+        opacity: 0.55;
+        transform: translateY(0);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: none;
+    }
+
+    100% {
+        opacity: 0.55;
+        transform: translateY(0);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+    .workflow-step,
+    .workflow-shimmer-line {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .workflow-shimmer-line {
+        display: none;
+    }
+}
+
+/* Mobile Tweak */
+@media (max-width: 380px) {
+    .step-title {
+        font-size: 11px;
+    }
+
+    .step-subtitle {
+        display: none;
+    }
+
+    .workflow-step {
+        padding: 6px 8px;
+    }
+}

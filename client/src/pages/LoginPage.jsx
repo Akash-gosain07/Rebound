@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiRequest } from '../apiClient';
 import { useAuthStore, useToastStore } from '../store';
+import WorkflowMiniAnimation from '../components/WorkflowMiniAnimation';
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -164,6 +166,9 @@ export default function LoginPage() {
               Temporary chat for meetup only
             </li>
           </ul>
+
+          {/* Mini Workflow Animation */}
+          <WorkflowMiniAnimation />
         </div>
 
         {/* Footer info */}
@@ -269,6 +274,6 @@ export default function LoginPage() {
         </motion.div>
       </div>
 
-    </div>
+    </div >
   );
 }

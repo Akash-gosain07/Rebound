@@ -24,8 +24,9 @@ const getCategoryEmoji = (category, type) => {
 
 const createCategoryIcon = (category, type) => {
   const emoji = getCategoryEmoji(category, type);
-  const bgColor = type === 'lost' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
-  const borderColor = type === 'lost' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)';
+  // Enhanced Marker Colors
+  const bgColor = type === 'lost' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(16, 185, 129, 0.2)'; // Rose-500 / Emerald-500 base
+  const borderColor = type === 'lost' ? '#F43F5E' : '#10B981'; // Rose-500 / Emerald-500 border
 
   return new L.DivIcon({
     className: `${type}-pin`,
@@ -48,18 +49,31 @@ const createCategoryIcon = (category, type) => {
   });
 };
 
-function MapViewController({ center }) {
+function MapViewController({ center, onMoveEnd }) {
   const map = useMap();
+
+  useMapEvents({
+    moveend: () => {
+      const newCenter = map.getCenter();
+      onMoveEnd({ lat: newCenter.lat, lng: newCenter.lng });
+    }
+  });
 
   // Ensure the map correctly fills its container when layout changes
   useEffect(() => {
     map.invalidateSize();
   }, [map]);
 
-  // Keep view in sync with the app's center
+  // Keep view in sync with the app's center ONLY when external center changes (like search)
+  // We don't want to re-set view on drag, that causes jitters/loops
   useEffect(() => {
     if (center) {
-      map.setView([center.lat, center.lng], map.getZoom());
+      // Check distance to avoid small jitter re-renders
+      const current = map.getCenter();
+      const dist = map.distance(center, current); // meters. map.distance works in Leaflet 1.0+
+      if (dist > 100) { // Only fly to if significantly different (e.g. search result)
+        map.flyTo([center.lat, center.lng], map.getZoom());
+      }
     }
   }, [center, map]);
 
@@ -166,12 +180,9 @@ export default function MapPage() {
       if (!showMenu || !user) return;
       setLoadingUserItems(true);
       try {
-        // Fetch User Items
-        const itemsData = await apiRequest('/api/items');
-        const myItems = (itemsData.items || []).filter(item =>
-          item.postedBy?._id === user._id || item.postedBy === user._id
-        );
-        setUserItems(myItems);
+        // Fetch User Items (Reported by me)
+        const itemsData = await apiRequest('/api/items/reported');
+        setUserItems(itemsData.items || []);
 
         // Fetch Active Meetups [NEW]
         const meetupsData = await apiRequest('/api/matches/active');
@@ -208,7 +219,7 @@ export default function MapPage() {
       formData.append('location', JSON.stringify({
         type: 'Point',
         coordinates: [selectedLocation.lng, selectedLocation.lat],
-        address: 'Bhubaneswar vicinity'
+        address: `Near ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`
       }));
       if (selectedPhoto) {
         formData.append('photo', selectedPhoto);
@@ -241,7 +252,9 @@ export default function MapPage() {
     }
   };
 
-  const filteredItems = useMemo(() => items, [items]);
+  const filteredItems = useMemo(() => {
+    return items.filter(item => item.status !== 'RECOVERED');
+  }, [items]);
 
   const handleRecenter = () => {
     if (userLocation) {
@@ -264,16 +277,39 @@ export default function MapPage() {
           ≡
         </button>
 
-        <div className="w-full h-full max-w-4xl rounded-3xl overflow-hidden shadow-card bg-slate-100 dark:bg-slate-900 relative border border-slate-200 dark:border-slate-700">
+        <div className="w-full h-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-white/40 dark:bg-slate-900/40 relative border border-white/20 dark:border-white/5 ring-1 ring-white/30 dark:ring-white/5 backdrop-blur-2xl">
           <MapContainer
             center={[center.lat, center.lng]}
             zoom={14}
             className="w-full h-full"
             scrollWheelZoom
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MapViewController center={center} />
+            {/* Premium CartoDB Tiles - Adaptive Light/Dark */}
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <MapViewController center={center} onMoveEnd={(newLoc) => setCenter(newLoc)} />
             <LocationPicker position={selectedLocation} onPick={setSelectedLocation} />
+
+            {/* Live User Location Marker */}
+            {userLocation && (
+              <Marker
+                position={[userLocation.lat, userLocation.lng]}
+                icon={new L.DivIcon({
+                  className: 'user-location-pulse',
+                  html: `
+                    <div class="relative flex h-6 w-6">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-6 w-6 bg-blue-500 border-2 border-white shadow-lg"></span>
+                    </div>`,
+                  iconSize: [24, 24],
+                  iconAnchor: [12, 12]
+                })}
+              >
+                <Popup>You are here</Popup>
+              </Marker>
+            )}
 
             {filteredItems.map((item) => (
               <Marker
@@ -286,10 +322,10 @@ export default function MapPage() {
                     <div className="font-semibold">{item.title}</div>
                     <div className="text-slate-500 capitalize">{item.category}</div>
                     <button
-                      className="mt-1 inline-flex items-center px-2 py-1 rounded-lg bg-teal-500 text-slate-950 text-[11px] font-medium"
+                      className="mt-2 w-full inline-flex items-center justify-center px-3 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-md transition-all active:scale-95"
                       onClick={() => navigate(`/item/${item._id}`)}
                     >
-                      View details
+                      View Full Details →
                     </button>
                   </div>
                 </Popup>
@@ -321,7 +357,30 @@ export default function MapPage() {
               className="pointer-events-auto w-9 h-9 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-soft flex items-center justify-center text-slate-700 dark:text-slate-200 text-lg border border-slate-200 dark:border-slate-700 transition-all"
               title="Recenter to my location"
             >
-              ⌖
+              <span className="text-xl">⌖</span>
+            </button>
+            {/* Theme Toggle Button (Floating) */}
+            <button
+              onClick={() => {
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('theme', 'light');
+                } else {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('theme', 'dark');
+                }
+                // Force re-render of map tiles by toggling key or state (simplified here by relying on React re-render from parent or state)
+                // For now, let's just force a reload or state update if needed, but the TileLayer component might need a key change to swap URLs instantly.
+                // A quick hack for this demo:
+                window.dispatchEvent(new Event('theme-change'));
+                setShowMenu(false);
+                setTimeout(() => setShowMenu(true), 10); // Hack to trigger re-render if needed
+              }}
+              className="pointer-events-auto w-9 h-9 ml-2 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur shadow-soft flex items-center justify-center text-slate-700 dark:text-slate-200 text-lg border border-slate-200 dark:border-slate-700 transition-all hover:scale-110 active:scale-95"
+              title="Toggle Theme"
+            >
+              {document.documentElement.classList.contains('dark') ? '🌙' : '☀️'}
             </button>
           </div>
 
@@ -349,7 +408,9 @@ export default function MapPage() {
                 >
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center text-[11px] font-semibold text-white ${item.type === 'lost' ? 'bg-red-500' : 'bg-emerald-500'
+                      className={`w-7 h-7 rounded-xl flex items-center justify-center text-[11px] font-semibold text-white shadow-sm ${item.type === 'lost'
+                        ? 'bg-gradient-to-br from-rose-400 to-rose-600'
+                        : 'bg-gradient-to-br from-emerald-400 to-emerald-600'
                         }`}
                     >
                       {item.type === 'lost' ? '?' : '!'}
@@ -369,7 +430,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      <div className="hidden md:flex md:w-[380px] border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex-col h-[40vh] md:h-screen">
+      <div className="hidden md:flex md:w-[400px] border-t md:border-t-0 md:border-l border-white/20 dark:border-white/5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl flex-col h-[40vh] md:h-screen shadow-2xl z-10 relative">
         <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div>
             <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Nearby items</div>
@@ -426,27 +487,51 @@ export default function MapPage() {
             <div className="text-xs text-slate-500 px-2 py-4">No items here yet. Be the first to report.</div>
           )}
           {filteredItems.map((item) => (
-            <button
+            <div
               key={item._id}
-              onClick={() => navigate(`/item/${item._id}`)}
-              className="w-full text-left rounded-2xl bg-white border border-slate-200 hover:border-primary hover:bg-slate-50 px-3 py-2.5 transition-all flex gap-3"
+              className="group w-full rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800 hover:border-primary/30 dark:hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 flex items-center gap-3 p-3 backdrop-blur-sm relative"
             >
-              <div
-                className={`mt-1 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold text-white ${item.type === 'lost' ? 'bg-danger' : 'bg-success'
-                  }`}
+              {/* Clickable Area for Map Location */}
+              <button
+                onClick={() => {
+                  if (item.location?.coordinates) {
+                    map.flyTo([item.location.coordinates[1], item.location.coordinates[0]], 16);
+                  }
+                }}
+                className="flex flex-1 items-center gap-4 text-left"
               >
-                {item.type === 'lost' ? '?' : '!'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="text-sm font-medium text-slate-900 truncate">{item.title}</div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{item.category}</div>
+                <div
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center text-base shadow-lg transition-transform group-hover:scale-110 duration-300 ${item.type === 'lost'
+                    ? 'bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-500/20 text-white'
+                    : 'bg-gradient-to-br from-emerald-400 to-teal-600 shadow-emerald-500/20 text-white'
+                    }`}
+                >
+                  {item.type === 'lost' ? '?' : '!'}
                 </div>
-                <div className="mt-1 text-xs text-slate-600 line-clamp-2">
-                  {item.location?.address || 'Bhubaneswar vicinity'}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-primary transition-colors max-w-[120px]">{item.title}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/50 px-2 py-0.5 rounded-full whitespace-nowrap">{item.category}</div>
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/40 dark:bg-primary/60"></span>
+                    <span className="truncate">{item.location?.address && item.location.address !== 'Bhubaneswar vicinity' ? item.location.address : `Near ${item.location?.coordinates?.[1]?.toFixed(4)}, ${item.location?.coordinates?.[0]?.toFixed(4)}`}</span>
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+
+              {/* Details/Navigate Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/item/${item._id}`);
+                }}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-700/50 text-slate-400 hover:text-primary dark:hover:text-white hover:bg-white dark:hover:bg-primary transition-all shadow-sm"
+                title="View Details"
+              >
+                →
+              </button>
+            </div>
           ))}
         </div>
 
@@ -702,13 +787,13 @@ export default function MapPage() {
             )}
 
             {/* Navigation Links */}
-            <div className="p-4 border-b border-slate-200 space-y-2">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 space-y-2">
               <button
                 onClick={() => {
                   navigate('/profile');
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 text-sm text-slate-700 hover:text-slate-900 transition-colors flex items-center gap-3"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-3"
               >
                 <span className="text-lg">👤</span>
                 <span>Profile</span>
@@ -718,7 +803,7 @@ export default function MapPage() {
                   navigate('/matches');
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 text-sm text-slate-700 hover:text-slate-900 transition-colors flex items-center gap-3"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-3"
               >
                 <span className="text-lg">🤝</span>
                 <span>My Matches</span>

@@ -7,77 +7,110 @@
 
 @layer base {
   :root {
-    /* Rebound UI - Light Mode: Distinct White & Cream Mix */
-    --background: #FDFBF7;
+    /* Rebound UI - Light Mode: Clean, Modern & Vibrant */
+    --background: #F8FAFC;
+    /* Slate 50 - Cool & Fresh */
     --background-gradient-start: #FFFFFF;
-    /* Pure White */
-    --background-gradient-end: #E6DED1;
-    /* Deeper Cream/Beige for visibility */
+    --background-gradient-end: #EFF6FF;
+    /* Blue 50 */
 
     --surface: #FFFFFF;
-    --text-primary: #000000;
-    --text-secondary: rgba(0, 0, 0, 0.65);
-    --border: #8FABD4;
+    --text-primary: #0F172A;
+    /* Slate 900 */
+    --text-secondary: #64748B;
+    /* Slate 500 */
+    --border: #E2E8F0;
+    /* Slate 200 */
 
-    /* Primary Brand */
-    --primary: #4A70A9;
-    --primary-dark: #3D5E8C;
-    --primary-light: #6B8BB9;
+    /* Primary Brand: Electric Indigo */
+    --primary: #4F46E5;
+    /* Indigo 600 */
+    --primary-dark: #4338CA;
+    /* Indigo 700 */
+    --primary-light: #818CF8;
+    /* Indigo 400 */
 
     /* Secondary Brand */
-    --secondary: #8FABD4;
-    --secondary-dark: #7A9AC3;
+    --secondary: #E2E8F0;
+    --secondary-dark: #CBD5E1;
 
-    /* Status Colors */
-    --success: #16A34A;
+    /* Status Colors - Vibrant & punchy */
+    --success: #10B981;
+    /* Emerald 500 */
     --warning: #F59E0B;
-    --danger: #DC2626;
+    /* Amber 500 */
+    --danger: #F43F5E;
+    /* Rose 500 */
 
-    /* Shadows */
-    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.08);
-    /* Slightly clearer shadow */
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
-    --shadow-button: 0 2px 8px rgba(74, 112, 169, 0.2);
+    /* Accent Brand (Used for Lost Items/Secondary Actions) */
+    --accent: #F43F5E;
+    /* Rose 500 */
+    --accent-dark: #E11D48;
+    /* Rose 600 */
+
+    /* Shadows: softer, colored shadows for depth */
+    --shadow-card: 0 10px 40px -10px rgba(148, 163, 184, 0.2);
+    --shadow-soft: 0 4px 20px -5px rgba(148, 163, 184, 0.15);
+    --shadow-button: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+    /* Colored shadow for primary */
   }
 
-  /* Dark Mode - Distinct Blue & Purple Mix */
+  /* Dark Mode - Enhanced & Perfected */
   .dark {
-    /* Background Gradient: Deep Ocean -> Galaxy Purple */
-    --background: #0F172A;
-    --background-gradient-start: #0F172A;
+    /* Background: Deepest rich dark blue/black for depth */
+    --background: #020617;
+    /* Slate 950 essentially */
+    --background-gradient-start: #020617;
+    --background-gradient-end: #0F172A;
     /* Slate 900 */
-    --background-gradient-end: #312E81;
-    /* Indigo 900 - Much more distinct */
 
-    /* Surface: Lighter and slightly tinted */
+    /* Surface: Distinctly lighter than bg, with a blue tint for harmony */
     --surface: #1E293B;
+    /* Slate 800 */
 
-    --text-primary: #F0F9FF;
+    /* Text: High legibility off-white, not harsh pure white */
+    --text-primary: #F1F5F9;
+    /* Slate 100 */
     --text-secondary: #94A3B8;
+    /* Slate 400 */
 
-    --border: #475569;
-    /* Slightly lighter border for contrast */
+    /* Border: Subtle but visible separator */
+    --border: #334155;
+    /* Slate 700 */
 
-    /* Primary Brand */
-    --primary: #60A5FA;
+    /* Primary Brand: Rebound Blue (Restored) */
+    --primary: #3B82F6;
+    /* Blue 500 */
     --primary-gradient-start: #3B82F6;
     --primary-gradient-end: #8B5CF6;
-    /* Blue to Violet gradient for buttons */
+    /* Violet 500 */
 
-    --primary-dark: #3B82F6;
-    --primary-light: #93C5FD;
+    --primary-dark: #2563EB;
+    /* Blue 600 */
+    --primary-light: #60A5FA;
+    /* Blue 400 */
 
+    /* Secondary: Muted cool gray/blue */
     --secondary: #334155;
     --secondary-dark: #475569;
 
-    /* Status Colors */
-    --success: #34D399;
-    --warning: #FBBF24;
-    --danger: #F87171;
+    /* Accent Brand (Lost Items) - Vivid Rose */
+    --accent: #F43F5E;
+    --accent-dark: #E11D48;
 
-    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.6);
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --shadow-button: 0 4px 12px rgba(96, 165, 250, 0.3);
+    /* Status Colors - Adjusted for dark mode vibration */
+    --success: #34D399;
+    /* Emerald 400 */
+    --warning: #FBBF24;
+    /* Amber 400 */
+    --danger: #F87171;
+    /* Red 400 */
+
+    /* Shadows: Stronger, more diffused shadows for depth in dark mode */
+    --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+    --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
+    --shadow-button: 0 0 20px rgba(45, 212, 191, 0.3);
+    /* Glow effect for primary buttons */
   }
 
   body {
@@ -201,7 +234,7 @@
   /* Modern Form Styling */
   .input-modern {
     @apply w-full rounded-xl bg-white border border-border px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
   }
 
   .label-modern {

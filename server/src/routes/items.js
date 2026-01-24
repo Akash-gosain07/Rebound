@@ -34,7 +34,7 @@ router.post('/', authRequired, upload.single('photo'), async (req, res) => {
         coordinates: location.coordinates,
         address: location.address || 'Bhubaneswar vicinity',
       },
-      postedBy: req.user._id,
+      reportedBy: req.user._id, // Updated from postedBy
     });
 
     return res.status(201).json({ item });
@@ -44,14 +44,14 @@ router.post('/', authRequired, upload.single('photo'), async (req, res) => {
   }
 });
 
-// Public list items endpoint (used by map, guest users can still view pins)
+// Public list items endpoint - STRICTLY filtered
 router.get('/', async (req, res) => {
   try {
     const { type, radius = 5000, lat, lng, category, q } = req.query;
-    const query = {};
-
-    // Show items that are not yet recovered (ACTIVE and MATCHED items should be visible)
-    query.status = { $ne: 'RECOVERED' };
+    const query = {
+      status: 'ACTIVE', // Only show active items
+      claimedBy: null   // Only show unclaimed items
+    };
 
     if (type) query.type = type;
     if (category && category !== 'all') query.category = category;
@@ -74,10 +74,30 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Allow public read of a single item (frontend route is still protected for logged-in users)
+// Get items reported by the current user
+router.get('/reported', authRequired, async (req, res) => {
+  try {
+    const items = await Item.find({ reportedBy: req.user._id }).sort({ createdAt: -1 });
+    return res.json({ items });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to fetch reported items' });
+  }
+});
+
+// Get items claimed by the current user
+router.get('/claimed', authRequired, async (req, res) => {
+  try {
+    const items = await Item.find({ claimedBy: req.user._id }).sort({ createdAt: -1 });
+    return res.json({ items });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to fetch claimed items' });
+  }
+});
+
+// Allow public read of a single item
 router.get('/:id', async (req, res) => {
   try {
-    const item = await Item.findById(req.params.id).populate('createdBy', 'userId fullName isVerified');
+    const item = await Item.findById(req.params.id).populate('reportedBy', 'userId fullName isVerified');
     if (!item) return res.status(404).json({ message: 'Item not found' });
     return res.json({ item });
   } catch (err) {
@@ -90,9 +110,12 @@ router.patch('/:id', authRequired, async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
-    if (!item.createdBy.equals(req.user._id)) {
-      return res.status(403).json({ message: 'Forbidden' });
+
+    // Strict ownership check
+    if (!item.reportedBy.equals(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden: You do not own this item' });
     }
+
     const { title, category, description } = req.body;
     if (title) item.title = title;
     if (category) item.category = category;
@@ -109,9 +132,12 @@ router.delete('/:id', authRequired, async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
-    if (!item.createdBy.equals(req.user._id)) {
-      return res.status(403).json({ message: 'Forbidden' });
+
+    // Strict ownership check
+    if (!item.reportedBy.equals(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden: You do not own this item' });
     }
+
     await item.deleteOne();
     return res.json({ message: 'Deleted' });
   } catch (err) {

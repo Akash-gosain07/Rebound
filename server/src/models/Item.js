@@ -27,10 +27,10 @@ const itemSchema = new mongoose.Schema(
       },
       address: { type: String },
     },
-    status: { type: String, enum: ['ACTIVE', 'MATCHED', 'RECOVERED'], default: 'ACTIVE' },
+    status: { type: String, enum: ['ACTIVE', 'MATCHED', 'RECOVERED', 'HELD_AT_HELP_DESK', 'CLAIMED'], default: 'ACTIVE' },
     verified: { type: Boolean, default: false },
-    postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );

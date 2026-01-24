@@ -8,13 +8,25 @@ const matchSchema = new mongoose.Schema(
     finder: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: {
       type: String,
-      enum: ['REQUESTED', 'MATCHED', 'OTP_SENT', 'VERIFIED', 'RECOVERED'],
+      enum: ['REQUESTED', 'MATCHED', 'OTP_SENT', 'VERIFIED', 'RECOVERED', 'HELD_AT_HELP_DESK'],
       default: 'REQUESTED',
+    },
+    handoverType: {
+      type: String,
+      enum: ['DIRECT', 'HELP_DESK'],
+      default: 'DIRECT'
+    },
+    verificationAuthority: {
+      type: String,
+      enum: ['FINDER', 'HELP_DESK'],
+      default: 'FINDER'
     },
     meetLocation: {
       label: { type: String, default: 'Spot B5' },
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
+      isLocked: { type: Boolean, default: false },
+      type: { type: String, enum: ['SAFE_POINT', 'MANUAL'], default: 'SAFE_POINT' },
       suggestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       approvedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
       changeRequests: [{
@@ -68,6 +80,24 @@ const matchSchema = new mongoose.Schema(
     // Meetup completion
     meetupCompleted: { type: Boolean, default: false },
     completedAt: Date,
+
+    helpDesk: {
+      handedOverAt: Date,
+      location: {
+        label: String,
+        lat: Number,
+        lng: Number
+      },
+      verifiedByHelpDesk: { type: Boolean, default: false }
+    },
+
+    // Audit Logging
+    statusHistory: [{
+      status: { type: String, required: true },
+      changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      timestamp: { type: Date, default: Date.now },
+      note: String
+    }]
   },
   { timestamps: true }
 );

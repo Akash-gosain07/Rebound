@@ -6,7 +6,7 @@ const otpSessionSchema = new mongoose.Schema(
     match: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' },
     purpose: {
       type: String,
-      enum: ['signup', 'match-owner', 'match-finder'],
+      enum: ['signup', 'match-owner', 'match-finder', 'help-desk-verification'],
       required: true,
     },
     otpHash: { type: String, required: true },

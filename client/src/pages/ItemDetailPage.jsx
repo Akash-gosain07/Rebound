@@ -122,7 +122,7 @@ export default function ItemDetailPage() {
                 <div>
                   Saved at{' '}
                   <span className="text-slate-900 font-medium">
-                    {item.location?.address || 'Bhubaneswar vicinity'}
+                    {item.location?.address || `Near ${item.location?.coordinates?.[1]?.toFixed(4)}, ${item.location?.coordinates?.[0]?.toFixed(4)}`}
                   </span>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default function ItemDetailPage() {
                   disabled={creatingMatch}
                   className="flex-1 inline-flex justify-center items-center gap-2 rounded-full bg-primary hover:bg-primary-dark text-white text-sm font-semibold py-3 shadow-button hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:hover:translate-y-0 active:scale-[0.98]"
                 >
-                  {creatingMatch ? 'Processing…' : 'This item is mine'}
+                  {creatingMatch ? 'Processing…' : (item.type === 'lost' ? 'I found it' : 'This item is mine')}
                 </button>
                 <button
                   onClick={() =>
