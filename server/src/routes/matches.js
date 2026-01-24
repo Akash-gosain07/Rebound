@@ -520,6 +520,7 @@ router.post('/:matchId/location/select', authRequired, async (req, res) => {
       label: location.label,
       lat: location.lat,
       lng: location.lng,
+      preferredTiming: location.preferredTiming,
       type: 'SAFE_POINT',
       suggestedBy: req.user._id,
       isLocked: false // Pending owner confirmation
@@ -587,6 +588,7 @@ router.post('/:matchId/handover/help-desk', authRequired, async (req, res) => {
         label: location?.label || 'Help Desk', // Fallback if simple string
         lat: location?.lat || match.meetLocation.lat,
         lng: location?.lng || match.meetLocation.lng,
+        preferredTiming: location?.preferredTiming,
         address: location?.address
       },
       verifiedByHelpDesk: false

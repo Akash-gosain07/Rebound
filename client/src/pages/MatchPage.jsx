@@ -4,6 +4,7 @@ import { apiRequest } from '../apiClient';
 import { useToastStore, useAuthStore } from '../store';
 import SafeLocationSelector from '../components/SafeLocationSelector';
 import SafeLocationMapPicker from '../components/SafeLocationMapPicker';
+import MatchChat from '../components/MatchChat';
 
 export default function MatchPage() {
   const { matchId } = useParams();
@@ -16,6 +17,7 @@ export default function MatchPage() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [helpDeskOtp, setHelpDeskOtp] = useState('');
+  const [preferredTiming, setPreferredTiming] = useState('');
   const pushToast = useToastStore((s) => s.pushToast);
   const user = useAuthStore((s) => s.user);
 
@@ -23,7 +25,10 @@ export default function MatchPage() {
     try {
       const data = await apiRequest(`/api/matches/${matchId}`);
       // Server now returns { match, myRole } - merge them for easier access
-      setMatch({ ...data.match, myRole: data.myRole });
+      const m = { ...data.match, myRole: data.myRole };
+      setMatch(m);
+      if (m.meetLocation?.preferredTiming) setPreferredTiming(m.meetLocation.preferredTiming);
+      if (m.helpDesk?.location?.preferredTiming) setPreferredTiming(m.helpDesk.location.preferredTiming);
     } catch (err) {
       pushToast({ type: 'error', message: err.message });
     } finally {
@@ -78,7 +83,7 @@ export default function MatchPage() {
       setSelectedLocation(location);
       await apiRequest(`/api/matches/${matchId}/location/select`, {
         method: 'POST',
-        body: { location }
+        body: { location: { ...location, preferredTiming } }
       });
       await loadMatch();
       pushToast({ type: 'success', message: 'Location selected' });
@@ -113,7 +118,7 @@ export default function MatchPage() {
     try {
       await apiRequest(`/api/matches/${matchId}/handover/help-desk`, {
         method: 'POST',
-        body: { location: selectedLocation }
+        body: { location: { ...selectedLocation, preferredTiming } }
       });
       await loadMatch();
       pushToast({ type: 'success', message: 'Handed over to Help Desk' });
@@ -237,9 +242,12 @@ export default function MatchPage() {
               <div className="font-semibold text-amber-800 dark:text-amber-200">
                 {match.helpDesk?.location?.label ? `Held at ${match.helpDesk.location.label}` : 'Item held at Help Desk'}
               </div>
-              <div className="text-sm text-amber-700 dark:text-amber-300">
-                {isFinder ? "Thank you! You have handed over the item. The owner will retrieve it." : "The item is at the Help Desk. Please proceed there to claim it."}
-              </div>
+              {isFinder ? "Thank you! You have handed over the item. The owner will retrieve it." : "The item is at the Help Desk. Please proceed there to claim it."}
+              {match.helpDesk?.location?.preferredTiming && (
+                <div className="mt-2 text-xs bg-amber-100 dark:bg-amber-900/40 p-2 rounded-lg text-amber-800 dark:text-amber-100 border border-amber-200/50 dark:border-amber-700/30">
+                  <span className="font-semibold">Finder Note:</span> {match.helpDesk.location.preferredTiming}
+                </div>
+              )}
             </div>
           )}
 
@@ -249,6 +257,17 @@ export default function MatchPage() {
               {isFinder && (
                 <>
                   <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Preferred Drop-off Timing / Notes</label>
+                      <textarea
+                        value={preferredTiming}
+                        onChange={(e) => setPreferredTiming(e.target.value)}
+                        placeholder="e.g. I will be free around 5 PM to drop this off..."
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all resize-none"
+                        rows={2}
+                      />
+                    </div>
+
                     <div className="flex justify-between items-center">
                       <h3 className="font-semibold text-slate-900 dark:text-white">Choose Meetup Location</h3>
                       <div className="flex gap-2">
@@ -323,6 +342,12 @@ export default function MatchPage() {
                       ? `Finder suggested: ${match.meetLocation.label}`
                       : "Waiting for finder to suggest a safe location..."}
                   </div>
+                  {match.meetLocation?.preferredTiming && (
+                    <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 max-w-xs mx-auto">
+                      <span className="font-semibold block mb-1">Finder Note:</span>
+                      {match.meetLocation.preferredTiming}
+                    </div>
+                  )}
                   {match.meetLocation?.suggestedBy && (
                     <button
                       onClick={handleLockLocation}
@@ -368,26 +393,19 @@ export default function MatchPage() {
                     </>
                   )}
 
-                  {/* Help Desk OTP */}
+                  {/* Help Desk OTP - Owner only sees code */}
                   {match.status === 'HELD_AT_HELP_DESK' && (
                     <>
                       {helpDeskOtp ? (
-                        <div className="space-y-4">
-                          <div className="text-4xl font-mono font-bold text-center text-amber-600 dark:text-amber-400 tracking-[0.2em] py-4 bg-white dark:bg-slate-950 rounded-xl border-2 border-dashed border-amber-500/30">
-                            {helpDeskOtp}
-                          </div>
-                          <div className="text-xs text-center text-slate-500">Provide this code to the Help Desk official.</div>
-
-                          {/* Simulate Kiosk Input for Demo */}
-                          <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                            <div className="text-xs text-center mb-2 font-mono text-slate-400">[DEMO: Simulate Help Desk Kiosk]</div>
-                            <input
-                              value={inputOtp}
-                              onChange={(e) => setInputOtp(e.target.value)}
-                              placeholder="Enter code here"
-                              className="w-full text-center p-2 rounded-lg border text-sm mb-2 dark:bg-slate-800 dark:border-slate-700"
-                            />
-                            <button onClick={handleVerifyHelpDeskClaim} className="w-full py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg text-xs">Simulate Verification</button>
+                        <div className="space-y-6">
+                          <div className="text-center space-y-2">
+                            <div className="text-xs text-slate-500 uppercase tracking-wider">Your Verification Code</div>
+                            <div className="text-5xl font-mono font-bold text-slate-900 dark:text-white tracking-[0.2em] py-4">
+                              {helpDeskOtp}
+                            </div>
+                            <div className="text-sm text-slate-600 dark:text-slate-400">
+                              Show this code to the Help Desk official to claim your item.
+                            </div>
                           </div>
                         </div>
                       ) : (
@@ -403,20 +421,42 @@ export default function MatchPage() {
                 </div>
               )}
 
-              {isFinder && match.status !== 'HELD_AT_HELP_DESK' && (
+              {isFinder && (
                 <div className="space-y-3">
-                  <input
-                    value={inputOtp}
-                    onChange={(e) => setInputOtp(e.target.value)}
-                    placeholder="Enter 6-digit code"
-                    className="w-full text-2xl font-mono text-center tracking-[0.2em] rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
-                  />
-                  <button
-                    onClick={handleVerifyOtp}
-                    className="w-full flex justify-center items-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 transition-colors shadow-lg shadow-teal-500/20"
-                  >
-                    Verify Owner
-                  </button>
+                  {match.status === 'HELD_AT_HELP_DESK' ? (
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                        <span>🏛️</span> Help Desk Portal (Finder/Staff View)
+                      </div>
+                      <input
+                        value={inputOtp}
+                        onChange={(e) => setInputOtp(e.target.value)}
+                        placeholder="Enter Owner's Code"
+                        className="w-full text-xl font-mono text-center tracking-widest rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700 uppercase"
+                      />
+                      <button
+                        onClick={handleVerifyHelpDeskClaim}
+                        className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-teal-600/20 transition-all active:scale-[0.98]"
+                      >
+                        Verify Owner & Release Item
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        value={inputOtp}
+                        onChange={(e) => setInputOtp(e.target.value)}
+                        placeholder="Enter 6-digit code"
+                        className="w-full text-2xl font-mono text-center tracking-[0.2em] rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
+                      />
+                      <button
+                        onClick={handleVerifyOtp}
+                        className="w-full flex justify-center items-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 transition-colors shadow-lg shadow-teal-500/20"
+                      >
+                        Verify Owner
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -455,6 +495,7 @@ export default function MatchPage() {
           </div>
         </div>
       </div>
+      <MatchChat status="active" />
     </div >
   );
 }

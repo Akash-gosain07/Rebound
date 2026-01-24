@@ -25,6 +25,7 @@ const matchSchema = new mongoose.Schema(
       label: { type: String, default: 'Spot B5' },
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
+      preferredTiming: String,
       isLocked: { type: Boolean, default: false },
       type: { type: String, enum: ['SAFE_POINT', 'MANUAL'], default: 'SAFE_POINT' },
       suggestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -86,7 +87,8 @@ const matchSchema = new mongoose.Schema(
       location: {
         label: String,
         lat: Number,
-        lng: Number
+        lng: Number,
+        preferredTiming: String
       },
       verifiedByHelpDesk: { type: Boolean, default: false }
     },
