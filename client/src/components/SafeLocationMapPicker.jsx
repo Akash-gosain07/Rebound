@@ -40,12 +40,12 @@ function MapViewController({ onMoveEnd }) {
 function LocationMarker({ position, onPositionChange }) {
     const map = useMap();
 
-    // Fly to position on initial load if provided
+    // Fly to position on initial load if provided (only once)
     useEffect(() => {
         if (position) {
             map.flyTo([position.lat, position.lng], map.getZoom());
         }
-    }, [map]);
+    }, [map]); // keep dep array stable
 
     useMapEvents({
         click(e) {
@@ -53,7 +53,23 @@ function LocationMarker({ position, onPositionChange }) {
         },
     });
 
-    return position ? <Marker position={position} /> : null;
+    const eventHandlers = {
+        dragend(e) {
+            const marker = e.target;
+            if (marker) {
+                onPositionChange(marker.getLatLng());
+            }
+        },
+    };
+
+    return position ? (
+        <Marker
+            position={position}
+            draggable={true}
+            eventHandlers={eventHandlers}
+            icon={DefaultIcon}
+        />
+    ) : null;
 }
 
 export default function SafeLocationMapPicker({ initialCenter, onConfirm, onCancel }) {
@@ -61,13 +77,14 @@ export default function SafeLocationMapPicker({ initialCenter, onConfirm, onCanc
     const [label, setLabel] = useState('');
 
     const handleConfirm = () => {
-        if (!position) return alert('Please click on the map to set a location');
-        if (!label.trim()) return alert('Please name this location');
+        if (!position) return; // Should not happen given default state
+
+        const finalLabel = label.trim() || `Custom Location (${position.lat.toFixed(4)}, ${position.lng.toFixed(4)})`;
 
         onConfirm({
             lat: position.lat,
             lng: position.lng,
-            label: label.trim(),
+            label: finalLabel,
             address: 'Custom Location (Map Selected)',
             type: 'SAFE_POINT'
         });
@@ -112,7 +129,7 @@ export default function SafeLocationMapPicker({ initialCenter, onConfirm, onCanc
                             type="text"
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
-                            placeholder="e.g. Engineering Gate, Canteen Help Desk..."
+                            placeholder="e.g. Engineering Gate... (Optional)"
                             className="w-full rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all dark:text-white"
                             autoFocus
                         />
