@@ -81,4 +81,4 @@ npm run dev
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome! Please fork the repository and submit a pull request, do give us insights to make it better.
