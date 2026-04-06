@@ -23,7 +23,7 @@ function AppRoutes() {
   const isLanding = location.pathname === '/' || location.pathname.startsWith('/auth/');
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" style={{ backgroundColor: '#F6F7F9' }}>
+    <div className="min-h-screen bg-background flex flex-col">
       <div className="flex-1 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.main
@@ -35,24 +35,18 @@ function AppRoutes() {
             className="flex-1 flex flex-col"
           >
             <Routes location={location}>
-              {/* Required flow */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth/login" element={<AuthLoginPage />} />
               <Route path="/auth/register" element={<AuthRegisterPage />} />
               <Route path="/map" element={<MapPage />} />
               <Route path="/item/:id" element={<ItemDetailsPage />} />
               <Route path="/match/:matchId" element={<MatchPage />} />
-
-              {/* Existing app pages (kept intact) */}
               <Route path="/post" element={<PostItemPage />} />
               <Route path="/browse" element={<BrowsePage />} />
               <Route path="/alerts" element={<AlertsPage />} />
               <Route path="/chat/:itemId" element={<ChatPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-
-              {/* Legacy route kept for compatibility */}
               <Route path="/otp-verify/:matchId" element={<OtpVerifyPage />} />
-
               <Route
                 path="/admin/moderation"
                 element={user?.isAdmin ? <AdminModerationPage /> : <Navigate to="/map" />}

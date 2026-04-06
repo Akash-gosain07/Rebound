@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema(
     phone: { type: String },
     authProvider: { type: String, enum: ['email', 'google'], default: 'email' },
     isVerified: { type: Boolean, default: false },
+    points: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );

@@ -18,6 +18,9 @@ export default function MatchPage() {
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [helpDeskOtp, setHelpDeskOtp] = useState('');
   const [preferredTiming, setPreferredTiming] = useState('');
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [feedbackComment, setFeedbackComment] = useState('');
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const pushToast = useToastStore((s) => s.pushToast);
   const user = useAuthStore((s) => s.user);
 
@@ -157,6 +160,22 @@ export default function MatchPage() {
       await loadMatch();
     } catch (err) {
       pushToast({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleSubmitFeedback = async () => {
+    try {
+      setSubmittingFeedback(true);
+      await apiRequest(`/api/matches/${matchId}/feedback`, {
+        method: 'POST',
+        body: { rating: feedbackRating, comment: feedbackComment },
+      });
+      pushToast({ type: 'success', message: 'Feedback submitted! Thank you.' });
+      await loadMatch();
+    } catch (err) {
+      pushToast({ type: 'error', message: err.message });
+    } finally {
+      setSubmittingFeedback(false);
     }
   };
 
@@ -493,6 +512,58 @@ export default function MatchPage() {
               View my matches
             </Link>
           </div>
+
+          {/* Feedback Section */}
+          {match.status === 'RECOVERED' && (
+            <div className="rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 space-y-4 shadow-sm backdrop-blur-sm">
+              <div className="text-center space-y-1">
+                <div className="text-sm font-bold text-indigo-900 dark:text-indigo-100 flex items-center justify-center gap-2">
+                  <span className="text-lg">🌟</span> Share Your Feedback
+                </div>
+                <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                  {isOwner
+                    ? `How was your experience with ${match.finder?.fullName || 'the finder'}?`
+                    : `How was your experience with ${match.owner?.fullName || 'the owner'}?`}
+                </div>
+              </div>
+
+              {((isOwner && match.ownerFeedback?.submittedAt) || (isFinder && match.finderFeedback?.submittedAt)) ? (
+                <div className="bg-white/60 dark:bg-slate-950/40 px-4 py-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/30 text-center">
+                  <div className="text-indigo-500 font-bold mb-1">Feedback Submitted!</div>
+                  <div className="text-[11px] text-indigo-400 dark:text-slate-500">
+                    Thank you for helping us build a better community.
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setFeedbackRating(star)}
+                        className={`text-3xl transition-all duration-200 transform hover:scale-125 ${feedbackRating >= star ? 'grayscale-0' : 'grayscale opacity-25'}`}
+                      >
+                        {feedbackRating >= star ? '⭐' : '☆'}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={feedbackComment}
+                    onChange={(e) => setFeedbackComment(e.target.value)}
+                    placeholder="Tell others about your experience..."
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-950 border border-indigo-100 dark:border-indigo-800/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none min-h-[90px] shadow-inner"
+                  />
+                  <button
+                    onClick={handleSubmitFeedback}
+                    disabled={submittingFeedback}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:opacity-50 hover:-translate-y-0.5"
+                  >
+                    {submittingFeedback ? 'Submitting...' : 'Submit Feedback'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <MatchChat status="active" />

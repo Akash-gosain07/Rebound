@@ -89,9 +89,17 @@ export default function ItemDetailPage() {
                   <div className="text-sm text-slate-600 capitalize">{item.category}</div>
                 </div>
                 {creatorVerified && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 border border-success/30 text-xs text-success">
-                    <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                    <span>Verified spotter</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 border border-success/30 text-xs text-success">
+                      <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                      <span>Verified spotter</span>
+                    </div>
+                    {item.reportedBy?.rating > 0 && (
+                      <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-0.5 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/50">
+                        <span>⭐</span>
+                        {item.reportedBy.rating.toFixed(1)}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

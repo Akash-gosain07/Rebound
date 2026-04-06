@@ -1,6 +1,8 @@
 import express from 'express';
 import { Match } from '../models/Match.js';
+import { User } from '../models/User.js';
 import { Item } from '../models/Item.js';
+import { Feedback } from '../models/Feedback.js';
 import { OtpSession } from '../models/OtpSession.js';
 import { authRequired } from '../middleware/auth.js';
 import { generateMatchId } from '../utils/ids.js';
@@ -385,6 +387,13 @@ router.post('/:matchId/recovered', authRequired, async (req, res) => {
       changedBy: req.user._id,
       note: 'Item marked as recovered'
     });
+
+    // AWARD POINTS: Only credit points if they haven't been credited yet
+    if (!match.pointsCredited) {
+      await User.findByIdAndUpdate(match.finder, { $inc: { points: 10 } });
+      match.pointsCredited = true;
+    }
+
     await match.save();
 
     // Mark the item as recovered so it doesn't appear on the map anymore
@@ -676,6 +685,13 @@ router.post('/:matchId/verify/help-desk-claim', authRequired, otpLimiter, async 
       changedBy: req.user._id,
       note: 'Help Desk verification complete'
     });
+
+    // AWARD POINTS: Only credit points if they haven't been credited yet
+    if (!match.pointsCredited) {
+      await User.findByIdAndUpdate(match.finder, { $inc: { points: 10 } });
+      match.pointsCredited = true;
+    }
+
     await match.save();
 
     if (match.item) {
@@ -718,6 +734,51 @@ router.post('/:matchId/otp/help-desk/generate', authRequired, otpLimiter, async 
     return res.json({ ownerOTP: code });
   } catch (err) {
     return res.status(500).json({ message: 'Failed to generate OTP' });
+  }
+});
+
+// Submit Feedback
+router.post('/:matchId/feedback', authRequired, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const match = await Match.findOne({ matchId: req.params.matchId });
+    if (!match) return res.status(404).json({ message: 'Match not found' });
+    if (match.status !== 'RECOVERED') {
+      return res.status(400).json({ message: 'Can only submit feedback for recovered items' });
+    }
+
+    const userId = req.user._id.toString();
+    const isOwner = match.owner.toString() === userId;
+    const isFinder = match.finder.toString() === userId;
+
+    if (!isOwner && !isFinder) return res.status(403).json({ message: 'Unauthorized' });
+
+    const targetUserId = isOwner ? match.finder : match.owner;
+
+    // Check if feedback already submitted
+    if ((isOwner && match.ownerFeedback?.submittedAt) || (isFinder && match.finderFeedback?.submittedAt)) {
+      return res.status(400).json({ message: 'Feedback already submitted' });
+    }
+
+    // Save to match
+    const feedbackData = { rating, comment, submittedAt: new Date() };
+    if (isOwner) match.ownerFeedback = feedbackData;
+    else match.finderFeedback = feedbackData;
+    await match.save();
+
+    // Create Feedback document (triggers rating update via post-save hook)
+    await Feedback.create({
+      match: match._id,
+      from: req.user._id,
+      to: targetUserId,
+      rating,
+      comment
+    });
+
+    return res.json({ message: 'Feedback submitted successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to submit feedback' });
   }
 });
 
