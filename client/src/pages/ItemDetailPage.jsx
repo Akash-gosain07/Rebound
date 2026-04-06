@@ -65,7 +65,7 @@ export default function ItemDetailPage() {
             <div className="md:w-1/2 bg-slate-100 relative">
               {item.photoUrl ? (
                 <img
-                  src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001'}${item.photoUrl}`}
+                  src={`${import.meta.env.VITE_API_BASE_URL || ''}${item.photoUrl}`}
                   alt={item.title}
                   className="w-full h-64 md:h-full object-cover"
                 />

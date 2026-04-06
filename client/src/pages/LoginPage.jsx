@@ -93,7 +93,7 @@ export default function LoginPage() {
 
   const handleGuest = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001'}/api/auth/guest`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/auth/guest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -103,7 +103,7 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      useAuthStore.getState().setAuth({ user: data.user, token: data.accessToken });
+      useAuthStore.getState().setAuth({ user: data.user, token: data.token });
       pushToast({ type: 'success', message: 'Browsing as guest – login to claim or post items.' });
       navigate('/map');
     } catch (err) {
