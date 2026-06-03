@@ -55,6 +55,25 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Points & Rating Section */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/50 rounded-2xl p-4 text-center shadow-soft">
+              <div className="text-[10px] uppercase tracking-widest text-teal-600 dark:text-teal-400 font-bold mb-1">Points Wallet</div>
+              <div className="text-2xl font-bold text-teal-700 dark:text-teal-300 flex items-center justify-center gap-1">
+                <span>🪙</span>
+                {user.points || 0}
+              </div>
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 rounded-2xl p-4 text-center shadow-soft">
+              <div className="text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-400 font-bold mb-1">Avg Rating</div>
+              <div className="text-2xl font-bold text-amber-700 dark:text-amber-300 flex items-center justify-center gap-1">
+                <span>⭐</span>
+                {user.rating ? user.rating.toFixed(1) : '0.0'}
+              </div>
+              <div className="text-[10px] text-amber-500 dark:text-amber-500/70 mt-1">{user.reviewCount || 0} reviews</div>
+            </div>
+          </div>
+
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700">
               <span className="text-slate-500 dark:text-slate-400">Phone</span>

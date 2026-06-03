@@ -54,7 +54,7 @@ export function ItemDetailsPage() {
       }
     };
     void load();
-  }, [id]);
+  }, [id, push]);
 
   const photo = item?.photos?.[0];
 
@@ -70,7 +70,6 @@ export function ItemDetailsPage() {
     if (!id) return;
     setClaiming(true);
     try {
-      // Use existing match system: create a match claim for this item.
       const res = await api.post('/matches', { itemId: id });
       const matchId = res.data.match?.matchId;
       if (!matchId) throw new Error('Match created, but no matchId returned');
@@ -85,7 +84,7 @@ export function ItemDetailsPage() {
   };
 
   if (loading) {
-    return <div className="mx-auto w-full max-w-md px-5 py-6 text-sm text-slate-500">Loading…</div>;
+    return <div className="mx-auto w-full max-w-md px-5 py-6 text-sm text-slate-500">Loading...</div>;
   }
 
   if (!item) {
@@ -95,7 +94,7 @@ export function ItemDetailsPage() {
   const address = item.location?.address || 'Main Street, Sector 6';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e8f7f5] via-white to-[#e6f0ff]">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#eef6fb_0%,#ffffff_100%)]">
       <div className="rb-shell rb-shell-narrow pb-20">
         <div className="flex items-center gap-3">
           <button
@@ -106,7 +105,7 @@ export function ItemDetailsPage() {
           >
             <ArrowLeft className="h-5 w-5 text-slate-700" />
           </button>
-          <div className="text-base font-semibold text-slate-900">Possibly Your Wallet</div>
+          <div className="text-base font-semibold text-slate-900">Recovery details</div>
         </div>
 
         <Card className="mt-6 overflow-hidden rounded-[28px] shadow-card">
@@ -122,7 +121,7 @@ export function ItemDetailsPage() {
             <div className="text-2xl font-semibold text-slate-900">{item.title || 'Brown Wallet'}</div>
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge>Verified User</StatusBadge>
-              <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">
+              <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-cyan-700 ring-1 ring-cyan-100">
                 {distanceLabel}
               </span>
             </div>
@@ -168,7 +167,7 @@ export function ItemDetailsPage() {
               onClick={onClaim}
               disabled={claiming}
             >
-              {claiming ? 'Starting…' : 'This Wallet Is Mine'}
+              {claiming ? 'Starting...' : 'This Wallet Is Mine'}
             </PrimaryButton>
             <SecondaryButton
               size="lg"

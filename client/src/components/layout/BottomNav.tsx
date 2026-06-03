@@ -11,8 +11,8 @@ const items = [
 
 export function BottomNav({ disabled = false }: { disabled?: boolean }) {
   return (
-    <nav className="fixed bottom-6 left-1/2 z-30 w-full max-w-4xl -translate-x-1/2 transform px-4">
-      <div className="mx-auto flex items-stretch justify-between rounded-[22px] bg-white/90 px-3 py-2 shadow-card ring-1 ring-slate-200/80 backdrop-blur">
+    <nav className="fixed bottom-5 left-1/2 z-30 w-full max-w-5xl -translate-x-1/2 transform px-4">
+      <div className="mx-auto flex items-stretch justify-between rounded-[26px] border border-white/10 bg-slate-950/92 px-3 py-2 shadow-[0_24px_60px_rgba(15,23,42,0.24)] ring-1 ring-slate-900/5 backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           return (
@@ -24,9 +24,9 @@ export function BottomNav({ disabled = false }: { disabled?: boolean }) {
               }}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-1 flex-col items-center gap-1 rounded-2xl px-1.5 py-1 text-[11px] font-medium transition',
+                  'flex flex-1 flex-col items-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-medium transition',
                   disabled && 'pointer-events-none opacity-40',
-                  isActive ? 'text-slate-900' : 'text-slate-500'
+                  isActive ? 'text-white' : 'text-slate-400'
                 )
               }
             >
@@ -36,8 +36,8 @@ export function BottomNav({ disabled = false }: { disabled?: boolean }) {
                     className={cn(
                       'flex h-9 w-9 items-center justify-center rounded-2xl transition',
                       isActive && !disabled
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-400 text-white shadow-soft'
-                        : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200/70'
+                        ? 'bg-gradient-to-r from-cyan-500 to-emerald-400 text-white shadow-[0_12px_24px_rgba(6,182,212,0.28)]'
+                        : 'bg-white/10 text-slate-200 ring-1 ring-white/10'
                     )}
                   >
                     <Icon className="h-4 w-4" />

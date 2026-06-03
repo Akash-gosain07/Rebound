@@ -18,15 +18,15 @@ export function FloatingCardsList({
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 px-4 md:pb-2">
       <div className="mx-auto max-w-4xl">
-        <Card className="pointer-events-auto overflow-hidden rounded-[26px] bg-white/95 shadow-card ring-1 ring-slate-200/80 backdrop-blur">
+        <Card className="pointer-events-auto overflow-hidden rounded-[28px] border border-white/70 bg-white/88 shadow-[0_24px_60px_rgba(15,23,42,0.16)] ring-1 ring-slate-200/70 backdrop-blur">
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-sm font-semibold text-slate-900">Campus Area</div>
+              <div className="text-sm font-semibold text-slate-900">Campus command view</div>
               <div className="mt-1 text-xs text-slate-500">
                 {nearbyCount > 0 ? `${nearbyCount} active item${nearbyCount === 1 ? '' : 's'} nearby` : 'No active items nearby'}
               </div>
             </div>
-            <div className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">
+            <div className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-700 ring-1 ring-cyan-100">
               Live map
             </div>
           </div>
@@ -42,7 +42,7 @@ export function FloatingCardsList({
                   onClick={() => onSelect(item)}
                   className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50 active:scale-[0.99]"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 text-sm font-semibold text-slate-600 ring-1 ring-slate-200/70">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-50 to-emerald-50 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/70">
                     {item.title?.[0] ? item.title[0].toUpperCase() : '•'}
                   </div>
                   <div className="flex-1">

@@ -225,7 +225,7 @@ export default function MapPage() {
         formData.append('photo', selectedPhoto);
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001'}/api/items`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/items`, {
         method: 'POST',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {})

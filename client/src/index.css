@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
 @import 'leaflet/dist/leaflet.css';
 
 @tailwind base;
@@ -7,120 +7,60 @@
 
 @layer base {
   :root {
-    /* Rebound UI - Light Mode: Clean, Modern & Vibrant */
-    --background: #F8FAFC;
-    /* Slate 50 - Cool & Fresh */
-    --background-gradient-start: #FFFFFF;
-    --background-gradient-end: #EFF6FF;
-    /* Blue 50 */
-
-    --surface: #FFFFFF;
-    --text-primary: #0F172A;
-    /* Slate 900 */
-    --text-secondary: #64748B;
-    /* Slate 500 */
-    --border: #E2E8F0;
-    /* Slate 200 */
-
-    /* Primary Brand: Electric Indigo */
-    --primary: #4F46E5;
-    /* Indigo 600 */
-    --primary-dark: #4338CA;
-    /* Indigo 700 */
-    --primary-light: #818CF8;
-    /* Indigo 400 */
-
-    /* Secondary Brand */
-    --secondary: #E2E8F0;
-    --secondary-dark: #CBD5E1;
-
-    /* Status Colors - Vibrant & punchy */
-    --success: #10B981;
-    /* Emerald 500 */
-    --warning: #F59E0B;
-    /* Amber 500 */
-    --danger: #F43F5E;
-    /* Rose 500 */
-
-    /* Accent Brand (Used for Lost Items/Secondary Actions) */
-    --accent: #F43F5E;
-    /* Rose 500 */
-    --accent-dark: #E11D48;
-    /* Rose 600 */
-
-    /* Shadows: softer, colored shadows for depth */
-    --shadow-card: 0 10px 40px -10px rgba(148, 163, 184, 0.2);
-    --shadow-soft: 0 4px 20px -5px rgba(148, 163, 184, 0.15);
-    --shadow-button: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
-    /* Colored shadow for primary */
+    --background: #f3f7fb;
+    --background-gradient-start: #ffffff;
+    --background-gradient-end: #ecf7fb;
+    --surface: #ffffff;
+    --text-primary: #081120;
+    --text-secondary: #607089;
+    --border: #d7e3ee;
+    --primary: #0891b2;
+    --primary-dark: #0f766e;
+    --primary-light: #67e8f9;
+    --secondary: #e8eef5;
+    --secondary-dark: #d9e3ee;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --accent: #f97316;
+    --accent-dark: #ea580c;
+    --shadow-card: 0 24px 60px rgba(8, 17, 32, 0.12);
+    --shadow-soft: 0 16px 35px rgba(8, 17, 32, 0.08);
+    --shadow-button: 0 16px 32px rgba(8, 145, 178, 0.22);
   }
 
-  /* Dark Mode - Enhanced & Perfected */
   .dark {
-    /* Background: Deepest rich dark blue/black for depth */
     --background: #020617;
-    /* Slate 950 essentially */
     --background-gradient-start: #020617;
-    --background-gradient-end: #0F172A;
-    /* Slate 900 */
-
-    /* Surface: Distinctly lighter than bg, with a blue tint for harmony */
-    --surface: #1E293B;
-    /* Slate 800 */
-
-    /* Text: High legibility off-white, not harsh pure white */
-    --text-primary: #F1F5F9;
-    /* Slate 100 */
-    --text-secondary: #94A3B8;
-    /* Slate 400 */
-
-    /* Border: Subtle but visible separator */
+    --background-gradient-end: #0f172a;
+    --surface: #162032;
+    --text-primary: #f8fafc;
+    --text-secondary: #93a4ba;
     --border: #334155;
-    /* Slate 700 */
-
-    /* Primary Brand: Rebound Blue (Restored) */
-    --primary: #3B82F6;
-    /* Blue 500 */
-    --primary-gradient-start: #3B82F6;
-    --primary-gradient-end: #8B5CF6;
-    /* Violet 500 */
-
-    --primary-dark: #2563EB;
-    /* Blue 600 */
-    --primary-light: #60A5FA;
-    /* Blue 400 */
-
-    /* Secondary: Muted cool gray/blue */
-    --secondary: #334155;
-    --secondary-dark: #475569;
-
-    /* Accent Brand (Lost Items) - Vivid Rose */
-    --accent: #F43F5E;
-    --accent-dark: #E11D48;
-
-    /* Status Colors - Adjusted for dark mode vibration */
-    --success: #34D399;
-    /* Emerald 400 */
-    --warning: #FBBF24;
-    /* Amber 400 */
-    --danger: #F87171;
-    /* Red 400 */
-
-    /* Shadows: Stronger, more diffused shadows for depth in dark mode */
-    --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
-    --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
-    --shadow-button: 0 0 20px rgba(45, 212, 191, 0.3);
-    /* Glow effect for primary buttons */
+    --primary: #22d3ee;
+    --primary-gradient-start: #06b6d4;
+    --primary-gradient-end: #10b981;
+    --primary-dark: #0891b2;
+    --primary-light: #67e8f9;
+    --secondary: #1e293b;
+    --secondary-dark: #334155;
+    --accent: #fb923c;
+    --accent-dark: #f97316;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --shadow-card: 0 24px 60px rgba(0, 0, 0, 0.42);
+    --shadow-soft: 0 16px 35px rgba(0, 0, 0, 0.28);
+    --shadow-button: 0 16px 32px rgba(34, 211, 238, 0.22);
   }
 
   body {
     background-color: var(--background);
     color: var(--text-primary);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     @apply font-sans antialiased;
   }
 
-  /* Gradient Background Utility */
   .bg-gradient-app {
     background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
   }
@@ -131,32 +71,27 @@
   h4,
   h5,
   h6 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Space Grotesk', 'Manrope', sans-serif;
     font-weight: 600;
     color: var(--text-primary);
   }
 }
 
 @layer utilities {
-
-  /* Card Utilities */
   .card-surface {
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-card);
   }
 
-  /* Button Utilities */
   .btn-primary {
-    background: var(--primary);
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #FFFFFF;
+    color: #ffffff;
     box-shadow: var(--shadow-button);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid transparent;
   }
 
-  /* Dark mode specific override for gradient */
   .dark .btn-primary {
     background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -165,8 +100,8 @@
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(74, 112, 169, 0.4);
-    filter: brightness(1.1);
+    box-shadow: 0 18px 32px rgba(8, 145, 178, 0.25);
+    filter: brightness(1.08);
   }
 
   .btn-secondary {
@@ -188,10 +123,9 @@
   }
 
   .btn-ghost:hover {
-    background: rgba(74, 112, 169, 0.1);
+    background: rgba(8, 145, 178, 0.08);
   }
 
-  /* Shadow Utilities */
   .shadow-soft {
     box-shadow: var(--shadow-soft);
   }
@@ -200,7 +134,6 @@
     box-shadow: var(--shadow-card);
   }
 
-  /* Animation Utilities */
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
@@ -210,7 +143,6 @@
   }
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0px);
@@ -221,7 +153,6 @@
     }
   }
 
-  /* Hover Effects */
   .hover-lift {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
@@ -231,14 +162,13 @@
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
   }
 
-  /* Modern Form Styling */
   .input-modern {
-    @apply w-full rounded-xl bg-white border border-border px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
+    @apply w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all duration-200;
+    @apply focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary;
   }
 
   .label-modern {
-    @apply text-sm font-medium text-slate-700 tracking-wide;
+    @apply text-sm font-medium tracking-wide text-slate-700;
   }
 
   .field-group {
@@ -264,7 +194,6 @@
   }
 }
 
-/* Leaflet Map Constraints */
 .leaflet-container {
   z-index: 0 !important;
 }
@@ -273,13 +202,11 @@
   z-index: auto !important;
 }
 
-/* Mapbox GL Control Container */
 .mapboxgl-control-container {
   position: relative !important;
   z-index: 1 !important;
 }
 
-/* Scrollbar styling */
 * {
   scrollbar-width: thin;
 }
@@ -290,7 +217,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full;
+  @apply rounded-full bg-slate-300;
 }
 
 ::-webkit-scrollbar-thumb:hover {

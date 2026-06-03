@@ -1,4 +1,3 @@
-
 let ioInstance;
 
 export const registerSocketHandlers = (io) => {

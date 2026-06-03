@@ -81,6 +81,7 @@ const matchSchema = new mongoose.Schema(
     // Meetup completion
     meetupCompleted: { type: Boolean, default: false },
     completedAt: Date,
+    pointsCredited: { type: Boolean, default: false },
 
     helpDesk: {
       handedOverAt: Date,
@@ -99,7 +100,17 @@ const matchSchema = new mongoose.Schema(
       changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       timestamp: { type: Date, default: Date.now },
       note: String
-    }]
+    }],
+    ownerFeedback: {
+      rating: Number,
+      comment: String,
+      submittedAt: Date
+    },
+    finderFeedback: {
+      rating: Number,
+      comment: String,
+      submittedAt: Date
+    }
   },
   { timestamps: true }
 );
